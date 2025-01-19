@@ -386,41 +386,28 @@ def generate_iter(TRAIN_SIZE, train_indices, TEST_SIZE, test_indices, TOTAL_SIZE
     return train_iter, valiada_iter, test_iter, all_iter #, y_test
 
 def generate_png(all_iter, net, gt_hsi, Dataset, device, total_indices):
-    pred_test = []
-    # with torch.no_grad():
-    #     for i in range(len(gt_hsi)):
-    #         if i == 0:
-    #             pred_test.extend([-1])
-    #         else:
-    #             X = all_iter[i].to(device)
-    #             net.eval()  # 评估模式, 这会关闭dropout
-    #             # print(net(X))
-    #             pred_test.extend(np.array(net(X).cpu().argmax(axis=1)))
+    """
+    生成并保存高光谱图像分类结果的彩色图。
 
-        # for X, y in all_iter:
-        #     #for data, label in X, y:
-        #     if y.item() != 0:
-        #         # print(X)
-        #         X = X.to(device)
-        #         net.eval()  # 评估模式, 这会关闭dropout
-        #         y_hat = net(X)
-        #         # print(net(X))
-        #         pred_test.extend(np.array(net(X).cpu().argmax(axis=1)))
-        #     else:
-        #         pred_test.extend([-1])
-    for X, y in all_iter:
+    参数:
+        all_iter: 测试数据迭代器
+        net: 分类网络模型
+        gt_hsi: 真实标签的高光谱图像
+        Dataset: 数据集名称
+        device: 计算设备
+        total_indices: 预测结果应填充到x_label中的索引
+    """
+    pred_test = []
+    net.eval()  # 评估模式, 这会关闭dropout
+    for X, _ in all_iter:
         X = X.to(device)
-        net.eval()  # 评估模式, 这会关闭dropout
-        # print(net(X))
         pred_test.extend(np.array(net(X).cpu().argmax(axis=1)))
 
-#  修改的地方111111111111111111==============================
     gt = gt_hsi.flatten()
     x_label = np.zeros(gt.shape)
     for i in range(len(gt)):
         if gt[i] == 0:
             gt[i] = 17
-            # x[i] = 16
             x_label[i] = 16
         # else:
         #     x_label[i] = pred_test[label_list]
