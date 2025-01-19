@@ -431,7 +431,7 @@ def generate_png(all_iter, net, gt_hsi, Dataset, device, total_indices):
     y_re = np.reshape(y_list, (gt_hsi.shape[0], gt_hsi.shape[1], 3))
     gt_re = np.reshape(y_gt, (gt_hsi.shape[0], gt_hsi.shape[1], 3))
 
-    timestamp = time.strftime("%y-%m-%d-%H.%M")
+    timestamp = time.strftime("-%y-%m-%d-%H.%M")
     path = '/root/DBDA/' + net.name
     classification_map(y_re, gt_hsi, 300,
                        path + '/classification_maps/' + Dataset + '_' + net.name + timestamp + '.png')

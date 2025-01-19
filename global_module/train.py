@@ -65,10 +65,10 @@ def train(net, train_iter, valida_iter, loss, optimizer, device, datasets,image_
     valida_loss_list = []
     train_acc_list = []
     valida_acc_list = []
+    lr_adjust = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 15, eta_min=0.0, last_epoch=-1) # 在每个epoch外创建lr_adjust
     for epoch in range(epochs):
         train_acc_sum, n = 0.0, 0
         time_epoch = time.time()
-        lr_adjust = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 15, eta_min=0.0, last_epoch=-1)
         for X, y in train_iter:
             batch_count, train_l_sum = 0, 0
             X = X.to(device)
@@ -83,7 +83,7 @@ def train(net, train_iter, valida_iter, loss, optimizer, device, datasets,image_
             train_acc_sum += (y_hat.argmax(dim=1) == y).sum().cpu().item()
             n += y.shape[0]
             batch_count += 1
-        lr_adjust.step(epoch)
+        lr_adjust.step()# epoch) # 新特性将删除epoch参数，移除避免警告
         valida_acc, valida_loss = evaluate_accuracy(valida_iter, net, loss, device)
         # 转换到cpu上运行numpy
         valida_loss_list.append(valida_loss.cpu().numpy())
@@ -152,7 +152,7 @@ def train(net, train_iter, valida_iter, loss, optimizer, device, datasets,image_
 
     # d2l.plt.show()
     d2l.plt.tight_layout()
-    date = time.strftime("%Y-%m-%d", time.localtime())
+    date = time.strftime("%Y-%m-%d-%H:%M", time.localtime())
     d2l.plt.savefig(f'{image_path}/{iter_index}-{datasets}-{date}.png')
     print('epoch %d, loss %.4f, train acc %.3f, time %.1f sec, figures @%s'
             % (epoch + 1, train_l_sum / batch_count, train_acc_sum / n, time.time() - start, image_path))
