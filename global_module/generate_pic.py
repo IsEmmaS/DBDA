@@ -11,124 +11,130 @@ import time
 
 def load_dataset(Dataset):
     """
-    Read the dataset by the index of the string:Dataset, abs path.
-    Args:
-        Dataset(string): 'IN', 'UP', 'PC', 'SV', 'KSC', 'BS', 'DN', 'DN_1', 'WHL', 'HC', 'HH'
-    Returns:
-        truple: data_hsi, gt_hsi, TOTAL_SIZE, TRAIN_SIZE, VALIDATION_SPLIT
+    根据数据集名称加载高光谱数据集。
     
+    参数:
+        Dataset(str): 数据集名称，可选值有'IN'、'UP'、'PC'、'SV'、'KSC'、'BS'、'DN'、'DN_1'、'WHL'、'HC'、'HH'等。
+    
+    返回:
+        tuple: data_hsi, gt_hsi, TOTAL_SIZE, TRAIN_SIZE, VALIDATION_SPLIT
     """
-    if Dataset == 'IN':
-        mat_data = sio.loadmat('/root/DBDA/datasets/Indian_pines_corrected.mat')
-        mat_gt = sio.loadmat('/root/DBDA/datasets/Indian_pines_gt.mat')
-        data_hsi = mat_data['indian_pines_corrected']
-        gt_hsi = mat_gt['indian_pines_gt']
-        TOTAL_SIZE = 10249
-        VALIDATION_SPLIT = 0.95
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
+    _dataset_info = {
+        'IN': {
+            'data_path': '/root/DBDA/datasets/Indian_pines_corrected.mat',
+            'gt_path': '/root/DBDA/datasets/Indian_pines_gt.mat',
+            'data_key': 'indian_pines_corrected',
+            'gt_key': 'indian_pines_gt',
+            'TOTAL_SIZE': 10249,
+            'VALIDATION_SPLIT': 0.95
+        },
+        'UP': {
+            'data_path': '/root/DBDA/datasets/PaviaU.mat',
+            'gt_path': '/root/DBDA/datasets/PaviaU_gt.mat',
+            'data_key': 'paviaU',
+            'gt_key': 'paviaU_gt',
+            'TOTAL_SIZE': 42776,
+            'VALIDATION_SPLIT': 0.91
+        },
+        'PC': {
+            'data_path': '/root/DBDA/datasets/Pavia.mat',
+            'gt_path': '/root/DBDA/datasets/Pavia_gt.mat',
+            'data_key': 'pavia',
+            'gt_key': 'pavia_gt',
+            'TOTAL_SIZE': 148152,
+            'VALIDATION_SPLIT': 0.999
+        },
+        'SV': {
+            'data_path': '/root/DBDA/datasets/Salinas_corrected.mat',
+            'gt_path': '/root/DBDA/datasets/Salinas_gt.mat',
+            'data_key': 'salinas_corrected',
+            'gt_key': 'salinas_gt',
+            'TOTAL_SIZE': 54129,
+            'VALIDATION_SPLIT': 0.98
+        },
+        'KSC': {
+            'data_path': '/root/DBDA/datasets/KSC.mat',
+            'gt_path': '/root/DBDA/datasets/KSC_gt.mat',
+            'data_key': 'KSC',
+            'gt_key': 'KSC_gt',
+            'TOTAL_SIZE': 5211,
+            'VALIDATION_SPLIT': 0.91
+        },
+        'BS': {
+            'data_path': '/root/DBDA/datasets/Botswana.mat',
+            'gt_path': '/root/DBDA/datasets/Botswana_gt.mat',
+            'data_key': 'Botswana',
+            'gt_key': 'Botswana_gt',
+            'TOTAL_SIZE': 3248,
+            'VALIDATION_SPLIT': 0.99
+        },
+        'DN': {
+            'data_path': '/root/DBDA/datasets/Dioni.mat',
+            'gt_path': '/root/DBDA/datasets/Dioni_gt_out68.mat',
+            'data_key': 'ori_data',
+            'gt_key': 'map',
+            'TOTAL_SIZE': 20024,
+            'VALIDATION_SPLIT': 0.95
+        },
+        'DN_1': {
+            'data_path': '/root/DBDA/datasets/DN_1/Dioni.mat',
+            'gt_path': '/root/DBDA/datasets/DN_1/Dioni_gt_out68.mat',
+            'data_key': 'imggt',
+            'gt_key': 'map',
+            'TOTAL_SIZE': 20024,
+            'VALIDATION_SPLIT': 0.98
+        },
+        'WHL': {
+            'data_path': '/root/DBDA/datasets/WHL/WHU_Hi_LongKou.mat',
+            'gt_path': '/root/DBDA/datasets/WHL/WHU_Hi_LongKou_gt.mat',
+            'data_key': 'WHU_Hi_LongKou',
+            'gt_key': 'WHU_Hi_LongKou_gt',
+            'TOTAL_SIZE': 204542,
+            'VALIDATION_SPLIT': 0.99
+        },
+        'HC': {
+            'data_path': '/root/DBDA/datasets/HC/WHU_Hi_HanChuan.mat',
+            'gt_path': '/root/DBDA/datasets/HC/WHU_Hi_HanChuan_gt.mat',
+            'data_key': 'WHU_Hi_HanChuan',
+            'gt_key': 'WHU_Hi_HanChuan_gt',
+            'TOTAL_SIZE': 257530,
+            'VALIDATION_SPLIT': 0.99
+        },
+        'HH': {
+            'data_path': '/root/DBDA/datasets/HH/WHU_Hi_HongHu.mat',
+            'gt_path': '/root/DBDA/datasets/HH/WHU_Hi_HongHu_gt.mat',
+            'data_key': 'WHU_Hi_HongHu',
+            'gt_key': 'WHU_Hi_HongHu_gt',
+            'TOTAL_SIZE': 386693,
+            'VALIDATION_SPLIT': 0.99
+        }
+    }
 
-    if Dataset == 'UP':
-        uPavia = sio.loadmat('/root/DBDA/datasets/PaviaU.mat')
-        gt_uPavia = sio.loadmat('/root/DBDA/datasets/PaviaU_gt.mat')
-        data_hsi = uPavia['paviaU']
-        gt_hsi = gt_uPavia['paviaU_gt']
-        TOTAL_SIZE = 42776
-        # VALIDATION_SPLIT = 0.98
-        VALIDATION_SPLIT = 0.91
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
+    if Dataset not in _dataset_info:
+        raise ValueError(f"Invalid dataset name: {Dataset}")
 
-    if Dataset == 'PC':
-        uPavia = sio.loadmat('/root/DBDA/datasets/Pavia.mat')
-        gt_uPavia = sio.loadmat('/root/DBDA/datasets/Pavia_gt.mat')
-        data_hsi = uPavia['pavia']
-        gt_hsi = gt_uPavia['pavia_gt']
-        TOTAL_SIZE = 148152
-        VALIDATION_SPLIT = 0.999
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-
-    if Dataset == 'SV':
-        SV = sio.loadmat('/root/DBDA/datasets/Salinas_corrected.mat')
-        gt_SV = sio.loadmat('/root/DBDA/datasets/Salinas_gt.mat')
-        data_hsi = SV['salinas_corrected']
-        gt_hsi = gt_SV['salinas_gt']
-        TOTAL_SIZE = 54129
-        VALIDATION_SPLIT = 0.98
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-
-    if Dataset == 'KSC':
-        KSC = sio.loadmat('/root/DBDA/datasets/KSC.mat')
-        gt_KSC = sio.loadmat('/root/DBDA/datasets/KSC_gt.mat')
-        data_hsi = KSC['KSC']
-        gt_hsi = gt_KSC['KSC_gt']
-        TOTAL_SIZE = 5211
-        # VALIDATION_SPLIT = 0.95
-        VALIDATION_SPLIT = 0.91
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-
-    if Dataset == 'BS':
-        BS = sio.loadmat('/root/DBDA/datasets/Botswana.mat')
-        gt_BS = sio.loadmat('/root/DBDA/datasets/Botswana_gt.mat')
-        data_hsi = BS['Botswana']
-        gt_hsi = gt_BS['Botswana_gt']
-        TOTAL_SIZE = 3248
-        VALIDATION_SPLIT = 0.99
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-    if Dataset == 'DN':
-        DN = sio.loadmat('/root/DBDA/datasets/Dioni.mat')
-        gt_DN = sio.loadmat('/root/DBDA/datasets/Dioni_gt_out68.mat')
-        data_hsi = DN['ori_data']
-        gt_hsi = gt_DN['map']
-        TOTAL_SIZE = 20024
-        VALIDATION_SPLIT = 0.95
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-    if Dataset == 'DN_1':
-        DN_1 = sio.loadmat('/root/DBDA/datasets/DN_1/Dioni.mat')
-        gt_DN_1 = sio.loadmat('/root/DBDA/datasets/DN_1/Dioni_gt_out68.mat')
-        data_hsi = DN_1['imggt']
-        gt_hsi = gt_DN_1['map']
-        TOTAL_SIZE = 20024
-        VALIDATION_SPLIT = 0.98
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-    if Dataset == 'WHL':
-        WHL = sio.loadmat('/root/DBDA/datasets/WHL/WHU_Hi_LongKou.mat')
-        gt_WHL = sio.loadmat('/root/DBDA/datasets/WHL/WHU_Hi_LongKou_gt.mat')
-        data_hsi = WHL['WHU_Hi_LongKou']
-        gt_hsi = gt_WHL['WHU_Hi_LongKou_gt']
-        TOTAL_SIZE = 204542
-        VALIDATION_SPLIT = 0.99
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-    if Dataset == 'HC':
-        HC = sio.loadmat('/root/DBDA/datasets/HC/WHU_Hi_HanChuan.mat')
-        gt_HC = sio.loadmat('/root/DBDA/datasets/HC/WHU_Hi_HanChuan_gt.mat')
-        data_hsi = HC['WHU_Hi_HanChuan']
-        gt_hsi = gt_HC['WHU_Hi_HanChuan_gt']
-        TOTAL_SIZE = 257530
-        VALIDATION_SPLIT = 0.99
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
-    if Dataset == 'HH':
-        HH = sio.loadmat('/root/DBDA/datasets/HH/WHU_Hi_HongHu.mat')
-        gt_HH = sio.loadmat('/root/DBDA/datasets/HH/WHU_Hi_HongHu_gt.mat')
-        data_hsi = HH['WHU_Hi_HongHu']
-        gt_hsi = gt_HH['WHU_Hi_HongHu_gt']
-        TOTAL_SIZE = 386693
-        VALIDATION_SPLIT = 0.99
-        TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
+    info = _dataset_info[Dataset]
+    data_hsi = sio.loadmat(info['data_path'])[info['data_key']]
+    gt_hsi = sio.loadmat(info['gt_path'])[info['gt_key']]
+    TOTAL_SIZE = info['TOTAL_SIZE']
+    VALIDATION_SPLIT = info['VALIDATION_SPLIT']
+    TRAIN_SIZE = math.ceil(TOTAL_SIZE * VALIDATION_SPLIT)
 
     return data_hsi, gt_hsi, TOTAL_SIZE, TRAIN_SIZE, VALIDATION_SPLIT
 
 def save_cmap(img, cmap, fname):
     """
-    Saves an image with a specified colormape to a file.
+    将带有指定colormap的图像保存到文件中。
 
-    Args:
-        img (numpy.ndarray): The input image to be saved with a colormap.
-        cmap (str or matplotlib.colors.Colormap): The colormap to be applied to the image. Can be a string (e.g., 'viridis', 'plasma')
-            or a matplotlib.colors.Colormap object.
-        fname (str): The filename to save the image to.
+    参数:
+        img (numpy.ndarray): 要保存的输入图像，需带有colormap。
+        cmap (str 或 matplotlib.colors.Colormap): 要应用于图像的colormap。可以是字符串（如'viridis'、'plasma'等）
+            或matplotlib.colors.Colormap对象。
+        fname (str): 保存图像的文件名。
 
-    Returns:
+    返回:
         None
-     Example:
+     示例:
         >>> import numpy as np
         >>> img = np.random.rand(100, 100)
         >>> save_cmap(img, 'viridis', 'example.png')
@@ -160,9 +166,6 @@ def sampling(proportion, ground_truth):
             nb_val = max(int((1 - proportion) * len(indexes)), 3)
         else:
             nb_val = 0
-        # print(i, nb_val, indexes[:nb_val])
-        # train[i] = indexes[:-nb_val]
-        # test[i] = indexes[-nb_val:]
         train[i] = indexes[:nb_val]
         test[i] = indexes[nb_val:]
     train_indexes = []
@@ -197,112 +200,117 @@ def classification_map(map, ground_truth, dpi, save_path):
 
     return 0
 
-
 def list_to_colormap(x_list):
-    y = np.zeros((x_list.shape[0], 3))
-    for index, item in enumerate(x_list):
-        if item == 0:
-            y[index] = np.array([255, 0, 0]) / 255.
-        if item == 1:
-            y[index] = np.array([0, 255, 0]) / 255.
-        if item == 2:
-            y[index] = np.array([0, 0, 255]) / 255.
-        if item == 3:
-            y[index] = np.array([255, 255, 0]) / 255.
-        if item == 4:
-            y[index] = np.array([255, 0, 255]) / 255.
-        if item == 5:
-            y[index] = np.array([0, 255, 255]) / 255.
-        if item == 6:
-            y[index] = np.array([200, 100, 0]) / 255.
-        if item == 7:
-            y[index] = np.array([0, 200, 100]) / 255.
-        if item == 8:
-            y[index] = np.array([100, 0, 200]) / 255.
-        if item == 9:
-            y[index] = np.array([200, 0, 100]) / 255.
-        if item == 10:
-            y[index] = np.array([100, 200, 0]) / 255.
-        if item == 11:
-            y[index] = np.array([0, 100, 200]) / 255.
-        if item == 12:
-            y[index] = np.array([150, 75, 75]) / 255.
-        if item == 13:
-            y[index] = np.array([75, 150, 75]) / 255.
-        if item == 14:
-            y[index] = np.array([75, 75, 150]) / 255.
-        if item == 15:
-            y[index] = np.array([255, 100, 100]) / 255.
-        if item == 16:
-            y[index] = np.array([0, 0, 0]) / 255.
-        if item == 17:
-            y[index] = np.array([100, 100, 255]) / 255.
-        if item == 18:
-            y[index] = np.array([255, 150, 75]) / 255.
-        if item == 19:
-            y[index] = np.array([75, 255, 150]) / 255.
-        if item == 20:
-            y[index] = np.array([150, 75, 255]) / 255.
-        if item == 21:
-            y[index] = np.array([50, 50, 50]) / 255.
-        if item == 22:
-            y[index] = np.array([100, 100, 100]) / 255.
-        if item == 23:
-            y[index] = np.array([150, 150, 150]) / 255.
-        if item == 24:
-            y[index] = np.array([200, 200, 200]) / 255.
-        if item == 25:
-            y[index] = np.array([250, 250, 250]) / 255.
-        if item == -1:
-            y[index] = np.array([0, 0, 0]) / 255.
+    """
+    将整数列表转换为颜色映射数组。
+
+    该函数将输入的整数列表 `x_list` 转换为一个颜色映射数组 `y`，其中每个整数对应一种特定的颜色。
+    颜色映射关系通过字典 `color_map` 定义，字典的键为整数，值为对应的颜色数组（归一化后的 RGB 值）。
+
+    Args:
+        x_list (numpy.ndarray): 输入的整数列表，形状为 (n,)，其中 n 为列表长度。
+
+    Returns:
+        numpy.ndarray: 输出的颜色映射数组，形状为 (n, 3)，其中每行表示一个颜色的 RGB 值。
+
+    Raises:
+        KeyError: 如果 `x_list` 中的某个整数不在 `color_map` 中，将使用默认的黑色 (0, 0, 0)。
+
+    Example:
+        >>> x_list = np.array([0, 1, 2, 3, 4])
+        >>> y = list_to_colormap(x_list)
+        >>> print(y)
+        [[1.         0.         0.        ]
+         [0.         1.         0.        ]
+         [0.         0.         1.        ]
+         [1.         1.         0.        ]
+         [1.         0.         1.        ]]
+
+    Note:
+        该函数假设输入的 `x_list` 是一个一维的 numpy 数组。如果输入不是 numpy 数组，可能会导致错误。
+        该函数使用了默认的黑色 (0, 0, 0) 作为未定义整数的颜色，确保输出数组的完整性。
+
+    See Also:
+        numpy.array: 用于创建和操作数组。
+    """
+    color_map = {
+        -1: np.array([0, 0, 0]) / 255.,
+        0: np.array([255, 0, 0]) / 255.,
+        1: np.array([0, 255, 0]) / 255.,
+        2: np.array([0, 0, 255]) / 255.,
+        3: np.array([255, 255, 0]) / 255.,
+        4: np.array([255, 0, 255]) / 255.,
+        5: np.array([0, 255, 255]) / 255.,
+        6: np.array([200, 100, 0]) / 255.,
+        7: np.array([0, 200, 100]) / 255.,
+        8: np.array([100, 0, 200]) / 255.,
+        9: np.array([200, 0, 100]) / 255.,
+        10: np.array([100, 200, 0]) / 255.,
+        11: np.array([0, 100, 200]) / 255.,
+        12: np.array([150, 75, 75]) / 255.,
+        13: np.array([75, 150, 75]) / 255.,
+        14: np.array([75, 75, 150]) / 255.,
+        15: np.array([255, 100, 100]) / 255.,
+        16: np.array([0, 0, 0]) / 255.,
+        17: np.array([100, 100, 255]) / 255.,
+        18: np.array([255, 150, 75]) / 255.,
+        19: np.array([75, 255, 150]) / 255.,
+        20: np.array([150, 75, 255]) / 255.,
+        21: np.array([50, 50, 50]) / 255.,
+        22: np.array([100, 100, 100]) / 255.,
+        23: np.array([150, 150, 150]) / 255.,
+        24: np.array([200, 200, 200]) / 255.,
+        25: np.array([250, 250, 250]) / 255.,
+    }
+    
+    y = np.array([color_map.get(item, np.array([0, 0, 0]) / 255.) for item in x_list])
     return y
-
-    #     if item == 0:
-    #         y[index] = np.array([255, 0, 0]) / 255.
-    #     if item == 1:
-    #         y[index] = np.array([0, 255, 0]) / 255.
-    #     if item == 2:
-    #         y[index] = np.array([0, 0, 255]) / 255.
-    #     if item == 3:
-    #         y[index] = np.array([255, 255, 0]) / 255.
-    #     if item == 4:
-    #         y[index] = np.array([0, 255, 255]) / 255.
-    #     if item == 5:
-    #         y[index] = np.array([255, 0, 255]) / 255.
-    #     if item == 6:
-    #         y[index] = np.array([192, 192, 192]) / 255.
-    #     if item == 7:
-    #         y[index] = np.array([128, 128, 128]) / 255.
-    #     if item == 8:
-    #         y[index] = np.array([128, 0, 0]) / 255.
-    #     if item == 9:
-    #         y[index] = np.array([128, 128, 0]) / 255.
-    #     if item == 10:
-    #         y[index] = np.array([0, 128, 0]) / 255.
-    #     if item == 11:
-    #         y[index] = np.array([128, 0, 128]) / 255.
-    #     if item == 12:
-    #         y[index] = np.array([0, 128, 128]) / 255.
-    #     if item == 13:
-    #         y[index] = np.array([0, 0, 128]) / 255.
-    #     if item == 14:
-    #         y[index] = np.array([255, 165, 0]) / 255.
-    #     if item == 15:
-    #         y[index] = np.array([255, 215, 0]) / 255.
-    #     if item == 16:
-    #         y[index] = np.array([0, 0, 0]) / 255.
-    #     if item == 17:
-    #         y[index] = np.array([215, 255, 0]) / 255.
-    #     if item == 18:
-    #         y[index] = np.array([0, 255, 215]) / 255.
-    #     if item == -1:
-    #         y[index] = np.array([0, 0, 0]) / 255.
-    # return y
-
-
 
 def generate_iter(TRAIN_SIZE, train_indices, TEST_SIZE, test_indices, TOTAL_SIZE, total_indices, VAL_SIZE,
                   whole_data, PATCH_LENGTH, padded_data, INPUT_DIMENSION, batch_size, gt):
+    """
+    生成用于训练、验证和测试的迭代器。
+    该函数从给定的数据集中提取训练、测试和验证集，并将它们转换为 PyTorch 的 DataLoader 格式，以便在深度学习模型中使用。
+
+    Args:
+        TRAIN_SIZE (int): 训练集的大小。
+        train_indices (numpy.ndarray): 训练集的索引。
+        TEST_SIZE (int): 测试集的大小。
+        test_indices (numpy.ndarray): 测试集的索引。
+        TOTAL_SIZE (int): 整个数据集的大小。
+        total_indices (numpy.ndarray): 整个数据集的索引。
+        VAL_SIZE (int): 验证集的大小。
+        whole_data (numpy.ndarray): 整个数据集的原始数据。
+        PATCH_LENGTH (int): 每个样本的邻域大小。
+        padded_data (numpy.ndarray): 填充后的数据。
+        INPUT_DIMENSION (int): 输入数据的维度。
+        batch_size (int): 每个批次的大小。
+        gt (numpy.ndarray): 地面真值（标签）。
+
+    Returns:
+        tuple: 包含训练集、验证集、测试集和整个数据集的迭代器 (train_iter, valiada_iter, test_iter, all_iter)。
+
+    Raises:
+        ValueError: 如果输入参数的类型或形状不正确。
+
+    Example:
+        >>> train_iter, valiada_iter, test_iter, all_iter = generate_iter(
+        ...     TRAIN_SIZE=100, train_indices=np.array([1, 2, 3]), TEST_SIZE=50, test_indices=np.array([4, 5, 6]),
+        ...     TOTAL_SIZE=150, total_indices=np.array([1, 2, 3, 4, 5, 6]), VAL_SIZE=20,
+        ...     whole_data=np.random.rand(150, 10, 10), PATCH_LENGTH=2, padded_data=np.random.rand(154, 10, 10),
+        ...     INPUT_DIMENSION=10, batch_size=10, gt=np.array([1, 2, 3, 4, 5, 6])
+        ... )
+        >>> print(train_iter)
+        <torch.utils.data.dataloader.DataLoader object at 0x...>
+
+    Note:
+        该函数假设输入的 `train_indices`、`test_indices` 和 `total_indices` 是一维的 numpy 数组。
+        该函数使用 `extract_samll_cubic.select_small_cubic` 函数提取数据，确保该函数已正确实现。
+
+    See Also:
+        extract_samll_cubic.select_small_cubic: 用于提取小立方体数据的函数。
+        torch.utils.data.DataLoader: 用于创建数据加载器的类。
+    """
 
     gt_all = gt[total_indices] - 1
     y_train = gt[train_indices] - 1
