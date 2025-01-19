@@ -1,0 +1,6 @@
+# Some local config and cache files
+.vscode
+__pycache__
+
+# too HUGE to upload toward remote, and seldom changed
+datasets/*
