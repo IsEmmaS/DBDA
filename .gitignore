@@ -2,5 +2,9 @@
 .vscode
 __pycache__
 
-# too HUGE to upload toward remote, and seldom changed
+# >>> this part has archived locally >>>
 datasets/*
+*.pt
+*.txt   
+DBDA/records/*
+# <<< this part has archived locally <<<
