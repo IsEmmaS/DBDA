@@ -9,6 +9,11 @@ import torch.utils.data as Data
 import time
 
 
+from pathlib import Path
+PWD = Path(__file__).resolve().parent.parent
+
+
+
 def load_dataset(Dataset):
     """
     根据数据集名称加载高光谱数据集。
@@ -21,88 +26,88 @@ def load_dataset(Dataset):
     """
     _dataset_info = {
         'IN': {
-            'data_path': '/root/DBDA/datasets/Indian_pines_corrected.mat',
-            'gt_path': '/root/DBDA/datasets/Indian_pines_gt.mat',
+            'data_path': f'{PWD}/datasets/Indian_pines_corrected.mat',
+            'gt_path': f'{PWD}/datasets/Indian_pines_gt.mat',
             'data_key': 'indian_pines_corrected',
             'gt_key': 'indian_pines_gt',
             'TOTAL_SIZE': 10249,
             'VALIDATION_SPLIT': 0.95
         },
         'UP': {
-            'data_path': '/root/DBDA/datasets/PaviaU.mat',
-            'gt_path': '/root/DBDA/datasets/PaviaU_gt.mat',
+            'data_path': f'{PWD}/datasets/PaviaU.mat',
+            'gt_path': f'{PWD}/datasets/PaviaU_gt.mat',
             'data_key': 'paviaU',
             'gt_key': 'paviaU_gt',
             'TOTAL_SIZE': 42776,
             'VALIDATION_SPLIT': 0.91
         },
         'PC': {
-            'data_path': '/root/DBDA/datasets/Pavia.mat',
-            'gt_path': '/root/DBDA/datasets/Pavia_gt.mat',
+            'data_path': f'{PWD}/datasets/Pavia.mat',
+            'gt_path': f'{PWD}/datasets/Pavia_gt.mat',
             'data_key': 'pavia',
             'gt_key': 'pavia_gt',
             'TOTAL_SIZE': 148152,
             'VALIDATION_SPLIT': 0.999
         },
         'SV': {
-            'data_path': '/root/DBDA/datasets/Salinas_corrected.mat',
-            'gt_path': '/root/DBDA/datasets/Salinas_gt.mat',
+            'data_path': f'{PWD}/datasets/Salinas_corrected.mat',
+            'gt_path': f'{PWD}/datasets/Salinas_gt.mat',
             'data_key': 'salinas_corrected',
             'gt_key': 'salinas_gt',
             'TOTAL_SIZE': 54129,
             'VALIDATION_SPLIT': 0.98
         },
         'KSC': {
-            'data_path': '/root/DBDA/datasets/KSC.mat',
-            'gt_path': '/root/DBDA/datasets/KSC_gt.mat',
+            'data_path': f'{PWD}/datasets/KSC.mat',
+            'gt_path': f'{PWD}/datasets/KSC_gt.mat',
             'data_key': 'KSC',
             'gt_key': 'KSC_gt',
             'TOTAL_SIZE': 5211,
             'VALIDATION_SPLIT': 0.91
         },
         'BS': {
-            'data_path': '/root/DBDA/datasets/Botswana.mat',
-            'gt_path': '/root/DBDA/datasets/Botswana_gt.mat',
+            'data_path': f'{PWD}/datasets/Botswana.mat',
+            'gt_path': f'{PWD}/datasets/Botswana_gt.mat',
             'data_key': 'Botswana',
             'gt_key': 'Botswana_gt',
             'TOTAL_SIZE': 3248,
             'VALIDATION_SPLIT': 0.99
         },
         'DN': {
-            'data_path': '/root/DBDA/datasets/Dioni.mat',
-            'gt_path': '/root/DBDA/datasets/Dioni_gt_out68.mat',
+            'data_path': f'{PWD}/datasets/Dioni.mat',
+            'gt_path': f'{PWD}/datasets/Dioni_gt_out68.mat',
             'data_key': 'ori_data',
             'gt_key': 'map',
             'TOTAL_SIZE': 20024,
             'VALIDATION_SPLIT': 0.95
         },
         'DN_1': {
-            'data_path': '/root/DBDA/datasets/DN_1/Dioni.mat',
-            'gt_path': '/root/DBDA/datasets/DN_1/Dioni_gt_out68.mat',
+            'data_path': f'{PWD}/datasets/DN_1/Dioni.mat',
+            'gt_path': f'{PWD}/datasets/DN_1/Dioni_gt_out68.mat',
             'data_key': 'imggt',
             'gt_key': 'map',
             'TOTAL_SIZE': 20024,
             'VALIDATION_SPLIT': 0.98
         },
         'WHL': {
-            'data_path': '/root/DBDA/datasets/WHL/WHU_Hi_LongKou.mat',
-            'gt_path': '/root/DBDA/datasets/WHL/WHU_Hi_LongKou_gt.mat',
+            'data_path': f'{PWD}/datasets/WHL/WHU_Hi_LongKou.mat',
+            'gt_path': f'{PWD}/datasets/WHL/WHU_Hi_LongKou_gt.mat',
             'data_key': 'WHU_Hi_LongKou',
             'gt_key': 'WHU_Hi_LongKou_gt',
             'TOTAL_SIZE': 204542,
             'VALIDATION_SPLIT': 0.99
         },
         'HC': {
-            'data_path': '/root/DBDA/datasets/HC/WHU_Hi_HanChuan.mat',
-            'gt_path': '/root/DBDA/datasets/HC/WHU_Hi_HanChuan_gt.mat',
+            'data_path': f'{PWD}/datasets/HC/WHU_Hi_HanChuan.mat',
+            'gt_path': f'{PWD}/datasets/HC/WHU_Hi_HanChuan_gt.mat',
             'data_key': 'WHU_Hi_HanChuan',
             'gt_key': 'WHU_Hi_HanChuan_gt',
             'TOTAL_SIZE': 257530,
             'VALIDATION_SPLIT': 0.99
         },
         'HH': {
-            'data_path': '/root/DBDA/datasets/HH/WHU_Hi_HongHu.mat',
-            'gt_path': '/root/DBDA/datasets/HH/WHU_Hi_HongHu_gt.mat',
+            'data_path': f'{PWD}/datasets/HH/WHU_Hi_HongHu.mat',
+            'gt_path': f'{PWD}/datasets/HH/WHU_Hi_HongHu_gt.mat',
             'data_key': 'WHU_Hi_HongHu',
             'gt_key': 'WHU_Hi_HongHu_gt',
             'TOTAL_SIZE': 386693,
@@ -440,7 +445,7 @@ def generate_png(all_iter, net, gt_hsi, Dataset, device, total_indices):
     gt_re = np.reshape(y_gt, (gt_hsi.shape[0], gt_hsi.shape[1], 3))
 
     timestamp = time.strftime("-%y-%m-%d-%H.%M")
-    path = '/root/DBDA/' + net.name
+    path = f'{PWD}/' + net.name
     classification_map(y_re, gt_hsi, 300,
                        path + '/classification_maps/' + Dataset + '_' + net.name + timestamp + '.png')
     classification_map(gt_re, gt_hsi, 300,

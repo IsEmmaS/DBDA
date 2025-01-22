@@ -7,7 +7,9 @@ from sklearn import metrics, preprocessing
 import datetime
 
 import sys
-sys.path.append('/root/DBDA/global_module/')
+from pathlib import Path
+PWD = Path(__file__).resolve().parent.parent
+sys.path.append(f'{PWD}/global_module/')
 
 import network
 import train
@@ -22,7 +24,7 @@ ensemble = 1
 
 day = datetime.datetime.now()
 day_str = day.strftime('%m_%d_%H_%M')
-IMAGE_FOLDER = '/root/DBDA/DBDA/records/figures'
+IMAGE_FOLDER = f'{PWD}/DBDA/records/figures'
 
 print('-----Importing Dataset-----')
 
@@ -41,7 +43,7 @@ CLASSES_NUM = max(gt)
 print('The class numbers of the HSI data is:', CLASSES_NUM)
 
 print('-----Importing Setting Parameters-----')
-ITER = 10
+ITER = 1
 PATCH_LENGTH = 4
 # number of training samples per class
 #lr, num_epochs, batch_size = 0.001, 200, 32
@@ -118,7 +120,7 @@ for index_iter in range(ITER):
     each_acc_fdssc, average_acc_fdssc = aa_and_each_accuracy(confusion_matrix_fdssc)
     kappa = metrics.cohen_kappa_score(pred_test_fdssc, gt_test[:-VAL_SIZE])
 
-    torch.save(net.state_dict(), "/root/DBDA/DBDA/pt/" + str(round(overall_acc_fdssc, 3)) + '.pt')
+    torch.save(net.state_dict(), f"{PWD}/DBDA/pt/" + str(round(overall_acc_fdssc, 3)) + '.pt')
     KAPPA.append(kappa)
     OA.append(overall_acc_fdssc)
     AA.append(average_acc_fdssc)
@@ -128,7 +130,7 @@ for index_iter in range(ITER):
 
 print("--------" + net.name + " Training Finished-----------")
 record.record_output(OA, AA, KAPPA, ELEMENT_ACC, TRAINING_TIME, TESTING_TIME,
-                     '/root/DBDA/DBDA/records/log/' + net.name + day_str + '_' + Dataset + 'split：' + str(VALIDATION_SPLIT) + 'lr：' + str(lr) + '.txt')
+                     f'{PWD}/DBDA/records/log/' + net.name + day_str + '_' + Dataset + 'split：' + str(VALIDATION_SPLIT) + 'lr：' + str(lr) + '.txt')
 
 
 generate_png(all_iter, net, gt_hsi, Dataset, device, total_indices)

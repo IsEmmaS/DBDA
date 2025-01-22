@@ -20,6 +20,8 @@ import torchtext
 import torchtext.vocab as Vocab
 import numpy as np
 
+from pathlib import Path
+PWD = Path(__file__).resolve().parent.parent
 
 VOC_CLASSES = ['background', 'aeroplane', 'bicycle', 'bird', 'boat',
                'bottle', 'bus', 'car', 'cat', 'chair', 'cow',
@@ -329,7 +331,7 @@ def resnet18(output=10, in_channels=3):
 # ############################## 6.3 ##################################3
 def load_data_jay_lyrics():
     """加载周杰伦歌词数据集"""
-    with zipfile.ZipFile('/root/DBDA/data/jaychou_lyrics.txt.zip') as zin:
+    with zipfile.ZipFile(f'{PWD}/data/jaychou_lyrics.txt.zip') as zin:
         with zin.open('jaychou_lyrics.txt') as f:
             corpus_chars = f.read().decode('utf-8')
     corpus_chars = corpus_chars.replace('\n', ' ').replace('\r', ' ')
@@ -583,7 +585,7 @@ def show_trace_2d(f, results):
 
 # ######################################## 7.3 ###############################################
 def get_data_ch7():  
-    data = np.genfromtxt('/root/DBDA/data/airfoil_self_noise.dat', delimiter='\t')
+    data = np.genfromtxt(f'{PWD}/data/airfoil_self_noise.dat', delimiter='\t')
     data = (data - data.mean(axis=0)) / data.std(axis=0)
     return torch.tensor(data[:1500, :-1], dtype=torch.float32), \
         torch.tensor(data[:1500, -1], dtype=torch.float32) # 前1500个样本(每个样本5个特征)

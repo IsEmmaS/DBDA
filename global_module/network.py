@@ -8,7 +8,9 @@ import numpy as np
 import torch.nn.functional as F
 
 import sys
-sys.path.append('/root/DBDA/global_module/')
+from pathlib import Path
+PWD = Path(__file__).resolve().parent.parent
+sys.path.append(f'{PWD}/global_module/')
 from activation import mish, gelu, gelu_new, swish
 
 

@@ -2,7 +2,9 @@ import time
 import torch
 import numpy as np
 import sys
-sys.path.append('/root/DBDA/global_module/')
+from pathlib import Path
+PWD = Path(__file__).resolve().parent.parent
+sys.path.append(f'{PWD}/global_module/')
 import d2lzh_pytorch as d2l
 
 def evaluate_accuracy(data_iter, net, loss, device):

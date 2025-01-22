@@ -6,5 +6,6 @@ __pycache__
 datasets/*
 *.pt
 *.txt   
-DBDA/records/*
+DBDA/records/figures/*
+DBDA/records/logs/*
 # <<< this part has archived locally <<<
